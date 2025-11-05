@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,6 +18,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip openjdk-17-jdk zip unzip
           pip install buildozer cython
+
+      - name: Accept Android SDK licenses
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | sudo apt-get install -y android-sdk
 
       - name: Build APK
         run: |
@@ -29,7 +36,7 @@ jobs:
           sed -i 's/version = .*/version = 1.0/' buildozer.spec
           sed -i 's/orientation = .*/orientation = portrait/' buildozer.spec
           sed -i 's/fullscreen = .*/fullscreen = 1/' buildozer.spec
-          buildozer android debug
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
